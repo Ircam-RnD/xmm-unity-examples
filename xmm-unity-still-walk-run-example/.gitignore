@@ -1,0 +1,11 @@
+**/.DS_Store
+**/Thumbs.db
+
+Temp/
+Library/ShaderCache/
+
+**/*.meta
+**/XmmEngine.cs
+**/Assets/Plugins/
+
+Builds/iOS/**
