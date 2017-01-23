@@ -1,4 +1,9 @@
 **/.DS_Store
 **/Thumbs.db
 
-xmm-unity-still-walk-run-example/
+README.md
+
+Temp/
+**/*.meta
+**/XmmEngine.cs
+**/Assets/Plugins/

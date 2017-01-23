@@ -17,17 +17,15 @@ public class XmmEngineTest : MonoBehaviour {
   string label = "";
   string likeliest = "";
   float[] likelihoods = new float[0];
-  private XmmEngine xmm = new XmmEngine();
+  private XmmTrainingSet ts = new XmmTrainingSet();
+  private XmmModel hhmm = new XmmModel("hhmm");
 
 	// Use this for initialization
 	void Start () {
-    xmm.clearTrainingSet();
-    xmm.clearModel();
-    xmm.setModelType(1); // HMM
-    xmm.setStates(10);
-    xmm.setLikelihoodWindow(5);
-    xmm.setRelativeRegularization(0.01f);
-    xmm.setGaussians(1);
+    hhmm.SetStates(10);
+    hhmm.SetLikelihoodWindow(5);
+    hhmm.SetRelativeRegularization(0.01f);
+    hhmm.SetGaussians(1);
 	}
 	
 	// Update is called once per frame
@@ -71,9 +69,9 @@ public class XmmEngineTest : MonoBehaviour {
           phrase.Add(mouseDelta[0]);
           phrase.Add(mouseDelta[1]);
         } else { //filter
-          xmm.filter(mouseDelta);
-          likeliest = xmm.getLikeliest();
-          likelihoods = xmm.getLikelihoods();
+          hhmm.Filter(mouseDelta);
+          likeliest = hhmm.GetLikeliest();
+          likelihoods = hhmm.GetLikelihoods();
         }
       }
     }    
@@ -84,8 +82,8 @@ public class XmmEngineTest : MonoBehaviour {
               "recording " + (recordEnabled ? "enabled" : "disabled"));    
     GUI.Label(new Rect(10, 30, 200, 50),
               "current label : " + label);
-    GUI.Label(new Rect(10, 50, 200, 50), "nb of models : " + xmm.getNbOfModels());
-    GUI.Label(new Rect(10, 70, 200, 50), "nb of phrases : " + xmm.getTrainingSetSize());
+    GUI.Label(new Rect(10, 50, 200, 50), "nb of models : " + hhmm.GetNbOfModels());
+    GUI.Label(new Rect(10, 70, 200, 50), "nb of phrases : " + ts.Size());
     GUI.Label(new Rect(10, 90, 200, 50), "likeliest : " + likeliest);
 
     string l = "";
@@ -106,9 +104,9 @@ public class XmmEngineTest : MonoBehaviour {
     record = false;
     float[] p = phrase.ToArray();
     string[] colNames = { "mouseX", "mouseY" };
-    xmm.addPhraseFromData(label, colNames, p, 2, 0);
-    xmm.train();
-    xmm.reset();
+    ts.AddPhraseFromData(label, colNames, p, 2, 0);
+    hhmm.Train(ts);
+    hhmm.Reset();
   }
 
   private void startFiltering() {
@@ -119,7 +117,7 @@ public class XmmEngineTest : MonoBehaviour {
 
   private void stopFiltering() {
     filter = false;
-    xmm.reset();
+    hhmm.Reset();
   }
 
   private float distance(float[] newPos, float[] prevPos) {
@@ -131,7 +129,7 @@ public class XmmEngineTest : MonoBehaviour {
   }
 
   private void logLabels() {
-    string[] labels = xmm.getTrainingSetLabels();
+    string[] labels = ts.GetLabels();
     Debug.Log("nb of labels : " + labels.Length);
     for (int i = 0; i < labels.Length; ++i) {
       Debug.Log("label " + i + " : " + labels[i]);
